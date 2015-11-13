@@ -1,0 +1,5 @@
+# Ignore Config Files
+*.conf.*
+
+# Node Modules
+node_modules/*

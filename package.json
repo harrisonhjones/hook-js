@@ -1,0 +1,29 @@
+{
+  "name": "hook-js",
+  "version": "1.0.0",
+  "description": "A NodeJS module to interact with the Hook (gethook.io) API",
+  "main": "hook.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "hook",
+    "iot",
+    "gethook",
+    "gethook.io"
+  ],
+  "author": "Harrison H. Jones <harrison@hhj.me>",
+  "license": "MIT",
+  "dependencies": {
+    "request": "^2.65.0"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/harrisonhjones/hook-js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/harrisonhjones/hook-js/issues"
+  },
+  "homepage": "https://github.com/harrisonhjones/hook-js#readme"
+}
