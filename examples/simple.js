@@ -45,6 +45,20 @@ hook.login({accessToken: config.hookAccessToken}, function(err, user) {
                 }
             }
         });
+
+        var deviceID = 90;
+        var actionName = "ON";
+
+        hook.callDeviceAction(deviceID, actionName, function(err, body) {
+            if(err)
+            {
+                console.log("Action Call Error: ", err);
+            }
+            else
+            {
+                console.log("Action Call Success", body);
+            }
+        });
     }
 });
 

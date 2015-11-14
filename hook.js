@@ -64,20 +64,14 @@ Hook.prototype.callDeviceAction = function(deviceID, actionName, callback) {
     if (debug) console.log("Calling action ", actionName, " on device ", deviceID);
 
     if(accessToken) {
-        if(Number.isInteger(deviceID)){
-
-            var request = require('request');
-            request(apiEndpoint + 'Devices/' + deviceID.toString() + '/' + actionName + '?access_token=' + accessToken, function(error, response, body) {
-                if (!error && response.statusCode == 200) {
-                    if (typeof callback === 'function') callback(error, JSON.parse(body));
-                } else {
-                    if (typeof callback === 'function') callback(error, response);
-                }
-            });
-        } else {
-            if (typeof callback === 'function') callback("The device ID must be an integer", null);
-        }
-
+        var request = require('request');
+        request(apiEndpoint + 'Devices/' + deviceID.toString() + '/' + actionName + '?access_token=' + accessToken, function(error, response, body) {
+            if (!error && response.statusCode == 200) {
+                if (typeof callback === 'function') callback(error, JSON.parse(body));
+            } else {
+                if (typeof callback === 'function') callback(error, response);
+            }
+        });
     } else {
         if (typeof callback === 'function') callback("No access token found. You must login first", null);
     } 
