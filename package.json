@@ -1,6 +1,6 @@
 {
   "name": "hook-js",
-  "version": "1.0.1",
+  "version": "2.0.0",
   "description": "A NodeJS module to interact with the Hook (gethook.io) API",
   "main": "hook.js",
   "scripts": {
@@ -15,7 +15,7 @@
   "author": "Harrison H. Jones <harrison@hhj.me>",
   "license": "MIT",
   "dependencies": {
-    "request": "^2.65.0"
+    "needle": "^1.0.0"
   },
   "devDependencies": {},
   "repository": {
