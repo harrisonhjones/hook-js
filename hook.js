@@ -189,6 +189,11 @@ Hook.prototype.getDevices = function(callback) {
     } 
 }
 
+Hook.prototype.getGroups = function(callback) {
+    if (Hook.debug) console.log('Hook devices not yet supported!');
+    if (typeof callback === 'function') callback(false, []);
+}
+
 Hook.prototype.callDeviceAction = function(deviceID, actionName, callback) {
     if (Hook.debug) console.log("Calling action ", actionName, " on device ", deviceID);
 
