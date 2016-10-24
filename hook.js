@@ -200,7 +200,7 @@ Hook.prototype.callDeviceAction = function(deviceID, actionName, callback) {
     if(Hook.token) {
         ///device/trigger/<deviceid>/<actionName>?token=xxxx
 
-        console.log(Hook.apiEndpoint + 'device/trigger/' + deviceID + '/' + actionName + '/?token=' + Hook.token);
+        if (Hook.debug) console.log(Hook.apiEndpoint + 'device/trigger/' + deviceID + '/' + actionName + '/?token=' + Hook.token);
 
         var needle = require('needle');
 
