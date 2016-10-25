@@ -161,9 +161,7 @@ Hook.prototype.getDevices = function(callback) {
 
     if(Hook.token) {
         var needle = require('needle');
-
         needle.get(Hook.apiEndpoint + 'device?token=' + Hook.token, {timeout: Hook.timeout},function(err, resp) {
-
             if(err)
             {
                 if (Hook.debug) console.log("[hook-js] get device failure. Error =", err);
@@ -198,24 +196,26 @@ Hook.prototype.callDeviceAction = function(deviceID, actionName, callback) {
     if (Hook.debug) console.log("Calling action ", actionName, " on device ", deviceID);
 
     if(Hook.token) {
-        ///device/trigger/<deviceid>/<actionName>?token=xxxx
-
         if (Hook.debug) console.log(Hook.apiEndpoint + 'device/trigger/' + deviceID + '/' + actionName + '/?token=' + Hook.token);
-
         var needle = require('needle');
-
         needle.get(Hook.apiEndpoint + 'device/trigger/' + deviceID + '/' + actionName + '/?token=' + Hook.token, {timeout: Hook.timeout}, function(err, resp) {
-
             if(err)
             {
-                if (Hook.debug) console.log("[hook-js] call device action failure. Error =", err);
-                if (typeof callback === 'function') callback(err, null);
+                if(err.code == 'ECONNRESET') {
+                    // The Hook cloud, as of Oct 2016, has issues with prematurely resetting the connection. 
+                    // This can be safely ignored for now but needs to be addressed at some point.
+                    // For now, issue a warning and proceed as if the action did not return an error.
+                    console.log("[hook-js] call device action warning. Connection reset (ECONNRESET)");
+                    callback(false, null);
+                } else {
+                    if (Hook.debug) console.log("[hook-js] call device action failure. Error =", err);
+                    if (typeof callback === 'function') callback(err, null);
+                }
             }
             else
             {
-                var response = JSON.parse(resp.body);                
+                //var response = JSON.parse(resp.body);                
                 callback(false, null);
-
                 /*
                 Hook's API doesn't follow the convention of the API endpoint at this point so the return value isn't very useful
 
@@ -230,9 +230,7 @@ Hook.prototype.callDeviceAction = function(deviceID, actionName, callback) {
                     if (typeof callback === 'function') callback(errorMessage, null);
                 }*/
             }
-
         });
-
     } else {
         if (typeof callback === 'function') callback("No access token found. You must login first", null);
     } 
