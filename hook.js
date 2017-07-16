@@ -4,6 +4,7 @@ function Hook() {
     Hook.apiEndpoint = 'https://api.gethook.io/v1/';
     Hook.debug = false;
     Hook.timeout = 1000;
+    Hook.userAgent = 'hook-js (generic)';
     Hook.username = '';
     Hook.email = '';
     Hook.firstname = '';
@@ -52,6 +53,19 @@ Hook.prototype.setTimeout = function(arg) {
     }
 }
 
+Hook.prototype.setUserAgent = function(arg) {
+    if(typeof arg === 'string') {
+        Hook.userAgent = 'hook-js (' + arg + ')';
+        if (Hook.debug) console.log("[hook-js] user agent set to", arg);
+        return true;
+    }
+    else
+    {
+        if (Hook.debug) console.log("[hook-js] setTimeout argument is of type", typeof arg, "instead of `string`. Value = ", arg);
+        return false;
+    }
+}
+
 Hook.prototype.setToken = function(arg)
 {
     if(typeof arg === 'string') {
@@ -93,10 +107,17 @@ Hook.prototype.getPhone = function()
 
 Hook.prototype.login = function(args, callback) {
     if(typeof args === 'object') {
+
+        var needle = require('needle');
+
+        var needleOptions = {
+            timeout: Hook.timeout,
+            headers: {'User-Agent': Hook.userAgent}
+        }
+
         if('token' in args) {
             if (Hook.debug) console.log("Logging in with token '", args.token, "'");
-            var needle = require('needle');
-            needle.get(Hook.apiEndpoint + 'user?token=' + args.token, {timeout: Hook.timeout}, function(err, resp) {
+            needle.get(Hook.apiEndpoint + 'user?token=' + args.token, needleOptions, function(err, resp) {
                 if(err)
                 {
                     if (Hook.debug) console.log("[hook-js] login failure. Error =", err);
@@ -125,8 +146,7 @@ Hook.prototype.login = function(args, callback) {
                 }
             });
         } else if(('username' in args) && ('password' in args)) {
-            var needle = require('needle');
-            needle.post(Hook.apiEndpoint + 'user/login', {username: args.username, password: args.password}, {timeout: Hook.timeout}, function(err, resp) {
+            needle.post(Hook.apiEndpoint + 'user/login', {username: args.username, password: args.password}, needleOptions, function(err, resp) {
                 if(err)
                 {
                     if (Hook.debug) console.log("[hook-js] login failure. Error =", err);
@@ -147,13 +167,13 @@ Hook.prototype.login = function(args, callback) {
                         if (typeof callback === 'function') callback(errorMessage);
                     }
                 }
-            });            
+            });
         } else {
             if (typeof callback === 'function') callback("Must login with accessToken or username and password");
         }
     } else  {
         if (typeof callback === 'function') callback("Must supply object argument to login");
-    } 
+    }
 }
 
 Hook.prototype.getDevices = function(callback) {
@@ -161,7 +181,13 @@ Hook.prototype.getDevices = function(callback) {
 
     if(Hook.token) {
         var needle = require('needle');
-        needle.get(Hook.apiEndpoint + 'device?token=' + Hook.token, {timeout: Hook.timeout},function(err, resp) {
+
+        var needleOptions = {
+            timeout: Hook.timeout,
+            headers: {'User-Agent': Hook.userAgent}
+        }
+
+        needle.get(Hook.apiEndpoint + 'device?token=' + Hook.token, needleOptions, function(err, resp) {
             if(err)
             {
                 if (Hook.debug) console.log("[hook-js] get device failure. Error =", err);
@@ -184,7 +210,7 @@ Hook.prototype.getDevices = function(callback) {
         });
     } else {
         if (typeof callback === 'function') callback("No access token found. You must login first", null);
-    } 
+    }
 }
 
 Hook.prototype.getGroups = function(callback) {
@@ -198,11 +224,17 @@ Hook.prototype.callDeviceAction = function(deviceID, actionName, callback) {
     if(Hook.token) {
         if (Hook.debug) console.log(Hook.apiEndpoint + 'device/trigger/' + deviceID + '/' + actionName + '/?token=' + Hook.token);
         var needle = require('needle');
-        needle.get(Hook.apiEndpoint + 'device/trigger/' + deviceID + '/' + actionName + '/?token=' + Hook.token, {timeout: Hook.timeout}, function(err, resp) {
+
+        var needleOptions = {
+            timeout: Hook.timeout,
+            headers: {'User-Agent': Hook.userAgent}
+        }
+
+        needle.get(Hook.apiEndpoint + 'device/trigger/' + deviceID + '/' + actionName + '/?token=' + Hook.token, needleOptions, function(err, resp) {
             if(err)
             {
                 if(err.code == 'ECONNRESET') {
-                    // The Hook cloud, as of Oct 2016, has issues with prematurely resetting the connection. 
+                    // The Hook cloud, as of Oct 2016, has issues with prematurely resetting the connection.
                     // This can be safely ignored for now but needs to be addressed at some point.
                     // For now, issue a warning and proceed as if the action did not return an error.
                     console.log("[hook-js] call device action warning. Connection reset (ECONNRESET)");
@@ -214,26 +246,13 @@ Hook.prototype.callDeviceAction = function(deviceID, actionName, callback) {
             }
             else
             {
-                //var response = JSON.parse(resp.body);                
+                // Hook's API doesn't follow the convention of the API endpoint at this point so the return value isn't very useful
                 callback(false, null);
-                /*
-                Hook's API doesn't follow the convention of the API endpoint at this point so the return value isn't very useful
-
-                if(parseInt(response.meta.status) == 200)
-                {
-                    if (typeof callback === 'function') callback(false, response.data);
-                }
-                else
-                {
-                    errorMessage = response.data.message;
-                    if (Hook.debug) console.log("[hook-js] get device failure. Error =", errorMessage);
-                    if (typeof callback === 'function') callback(errorMessage, null);
-                }*/
             }
         });
     } else {
         if (typeof callback === 'function') callback("No access token found. You must login first", null);
-    } 
+    }
 }
 
 module.exports = new Hook();

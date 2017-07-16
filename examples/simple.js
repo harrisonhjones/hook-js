@@ -1,7 +1,7 @@
 var hook = new require('../hook');
 
 hook.setDebug(true);
-// hook.setApiEndpoint('http://ahook.cloudapp.net:3000/api/');
+hook.setUserAgent('example: simple.js');
 
 hook.login({token: process.env.HOOKACCESSTOKEN}, function(err) {
     if(err)
@@ -44,7 +44,7 @@ hook.login({token: process.env.HOOKACCESSTOKEN}, function(err) {
             }
         });
 
-        
+
     }
 });
 
