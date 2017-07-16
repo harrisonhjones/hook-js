@@ -1,6 +1,6 @@
 {
   "name": "hook-js",
-  "version": "2.1.2",
+  "version": "2.2.0",
   "description": "A NodeJS module to interact with the Hook (gethook.io) API",
   "main": "hook.js",
   "scripts": {
